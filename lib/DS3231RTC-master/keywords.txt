@@ -1,0 +1,13 @@
+Time	KEYWORD1
+DS3231RTC	KEYWORD1
+setTime	KEYWORD2
+getTime	KEYWORD2
+readRegister	KEYWORD2
+writeRegister	KEYWORD2
+init	KEYWORD2
+enSQWOUT	KEYWORD2
+enAlarm1Interrupt	KEYWORD2
+enAlarm2Interrupt	KEYWORD2
+cleanAlarm1Flag	KEYWORD2
+cleanAlarm2Flag	KEYWORD2
+getTemperature	KEYWORD2
