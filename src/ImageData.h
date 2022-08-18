@@ -36,6 +36,16 @@ extern const unsigned char gImage_2in13b_b[];
 extern const unsigned char gImage_2in13b_r[];
 extern const unsigned char gImage_2in13c_b[];
 extern const unsigned char gImage_2in13c_y[];
+extern const unsigned char gImage_black1[];//高考倒计时图页
+extern const unsigned char gImage_red1[];
+extern const unsigned char gImage_black2[];//艺考倒计时图页
+extern const unsigned char gImage_red2[];
+extern const unsigned char gImage_setupblack[];//开机页面
+extern const unsigned char gImage_setupred[];
+extern const unsigned char gImage_courageblack[];//激励页面
+extern const unsigned char gImage_couragered[];
+extern const unsigned char gImage_mainpage[];//主页
+
 
 #endif
 /* FILE END */
