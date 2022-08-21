@@ -51,6 +51,7 @@ bool res = false;//判断WiFi是否连接
 int waitTime = 0;//待机计数
 RTC_DATA_ATTR bool firstwifiElinkconfit = true;//第一次WiFi和Elnk配置标志
 RTC_DATA_ATTR int Modestate = 1;//模式选择状态默认为1
+RTC_DATA_ATTR bool drawpage = true;//绘制页面标记
 
 //函数声明
 void Elnksetup();//墨水屏初始化
@@ -346,18 +347,34 @@ void mode1(){
   // RTC_DATA_ATTR int hour = 0;
   // attachInterrupt(0,alarm, FALLING);
   // rtc.enAlarm1Interrupt(hour + 1,1);
-
-  if((t.hour()>='6') && (t.hour()<='22')){
+  int hour = t.hour();
+  if(hour>=6 && hour<=22){
     int i = Date_difference(t.year(),t.month(),t.date(),YEAR1,MONTH1,DAY1);
-    page1(i,t.year(),t.month(),t.date(),t.hour(),t.day());
+    if(drawpage)
+      page1(i,t.year(),t.month(),t.date(),t.hour(),t.day());
+    // page1(i,t.year(),t.month(),t.date(),t.hour(),t.day());
     // alarmFlag = false;
     int lateminute = (60 - t.minute());
-    esp_sleep_enable_timer_wakeup(lateminute*TIME_TO_SLEEP*uS_TO_S_FACTOR);//深度睡眠唤醒时间
+    if(lateminute>30){
+      esp_sleep_enable_timer_wakeup(31*TIME_TO_SLEEP*uS_TO_S_FACTOR);//每31分钟苏醒检测状态
+      drawpage = false;
+      // delay(1000);
+      // esp_deep_sleep_start();
+    }
+    else{
+      drawpage = true;
+      esp_sleep_enable_timer_wakeup(lateminute*TIME_TO_SLEEP*uS_TO_S_FACTOR);//深度睡眠唤醒时间
+    }
     Serial.println(lateminute);
     Serial.println(t.hour());
+    // if(drawpage)
+    //   page1(i,t.year(),t.month(),t.date(),t.hour(),t.day());
   }
-  else
+  else{
     esp_sleep_enable_timer_wakeup(30*TIME_TO_SLEEP*uS_TO_S_FACTOR);//每30分钟苏醒检测状态
+    delay(1000);
+    // esp_deep_sleep_start();
+  }
   delay(2000);
   // esp_deep_sleep_start();//进入深度睡眠
 }
@@ -421,6 +438,7 @@ void setup() {
     Elnksetup(); 
     Wifisetup();
     firstwifiElinkconfit = false; 
+    mode1();
   }
   // Elnksetup();
   // RTC_Setup();
@@ -437,21 +455,25 @@ void setup() {
   //   page4();
   // }
   // else{
+  if(esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_TIMER){
     if(Modestate == 1){
       mode1();
+      delay(500);
+      esp_deep_sleep_start();
     }
-    else if(Modestate == 2){
-      mode2();
-    }
-    else if(Modestate == 3){
-      mode3();
-    }
-    else
-      Modestate = 1;
+    // else if(Modestate == 2){
+    //   mode2();
+    // }
+    // else if(Modestate == 3){
+    //   mode3();
+    // }
+    // else
+    //   Modestate = 1;
+  }
   // }
   // Modestate++;
   // Serial.println(Voltage());
-  digitalWrite(25,LOW);
+  // digitalWrite(25,LOW);
   // Serial.println("即将进入睡眠");
   // esp_deep_sleep_start();//进入深度睡眠
 }
@@ -473,6 +495,7 @@ void loop() {
     }
     if(i == 1){
       if(Modestate == 1){
+        drawpage = true;
         mode1();
       }
       else if(Modestate == 2){
